@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -30,6 +30,7 @@ async function run() {
 
         const parcelsCollection = client.db('trustTrackDB').collection('parcels');
 
+        //parcel release API
         app.get('/parcels', async (req, res) => {
             try {
                 const userEmail = req.query.email;
@@ -52,6 +53,13 @@ async function run() {
         app.post('/parcels', async (req, res) => {
             const parcel = req.body;
             const result = await parcelsCollection.insertOne(parcel);
+            res.send(result);
+        });
+
+        app.delete('/parcels/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await parcelsCollection.deleteOne(query);
             res.send(result);
         });
 
