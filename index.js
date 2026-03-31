@@ -63,6 +63,32 @@ async function run() {
             res.send(result);
         });
 
+        app.patch('/parcels/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedData = req.body;
+
+            // Remove the _id from the body to prevent MongoDB update errors
+            delete updatedData._id;
+
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    ...updatedData
+                },
+            };
+
+            const result = await parcelsCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        });
+
+        // Also make sure you have this GET route so the frontend can fetch the single parcel
+        app.get('/parcels/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await parcelsCollection.findOne(query);
+            res.send(result);
+        });
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
