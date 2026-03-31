@@ -98,10 +98,10 @@ async function run() {
             res.send(result);
         });
 
-        
+
         // Payment Intent API
 
-         app.get('/payments', async (req, res) => {
+        app.get('/payments', async (req, res) => {
             try {
                 const userEmail = req.query.email;
 
@@ -172,6 +172,15 @@ async function run() {
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
+        });
+
+        //Payment History API
+        
+        app.get('/payments', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const result = await paymentsCollection.find(query).sort({ paid_at: -1 }).toArray();
+            res.send(result);
         });
 
         // Send a ping to confirm a successful connection
